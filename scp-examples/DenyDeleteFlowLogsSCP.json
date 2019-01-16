@@ -1,0 +1,26 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1546200380000",
+            "Effect": "Deny",
+            "Action": [
+                "ec2:DeleteFlowLogs"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "Stmt1546200458000",
+            "Effect": "Deny",
+            "Action": [
+                "logs:DeleteLogGroup",
+                "logs:DeleteLogStream"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}

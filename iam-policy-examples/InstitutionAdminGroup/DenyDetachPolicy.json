@@ -1,0 +1,11 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "VisualEditor0",
+        "Effect": "Deny",
+        "Action": "organizations:DetachPolicy",
+        "Resource": "arn:aws:organizations::166631568452:policy/o-idxghyb7pw/service_control_policy/p-nqtkz47h"
+      }
+    ]
+  }

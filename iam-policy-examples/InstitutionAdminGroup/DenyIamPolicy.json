@@ -1,0 +1,54 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "VisualEditor0",
+        "Effect": "Deny",
+        "Action": [
+          "iam:UpdateAssumeRolePolicy",
+          "iam:PutRolePermissionsBoundary",
+          "iam:DeletePolicy",
+          "iam:AttachRolePolicy",
+          "iam:PutRolePolicy",
+          "iam:DeleteRolePermissionsBoundary",
+          "iam:CreateUser",
+          "iam:RemoveUserFromGroup",
+          "iam:DetachRolePolicy",
+          "iam:DeleteRolePolicy",
+          "iam:DetachGroupPolicy",
+          "iam:DetachUserPolicy",
+          "iam:CreatePolicyVersion",
+          "iam:PutGroupPolicy",
+          "iam:CreateGroup",
+          "iam:PutUserPermissionsBoundary",
+          "iam:DeleteUserPolicy",
+          "iam:AttachUserPolicy",
+          "iam:DeleteUserPermissionsBoundary",
+          "iam:CreatePolicy",
+          "iam:AttachGroupPolicy",
+          "iam:PutUserPolicy",
+          "iam:DeleteGroupPolicy",
+          "iam:DeletePolicyVersion",
+          "iam:SetDefaultPolicyVersion"
+        ],
+        "Resource": [
+          "arn:aws:iam::*:saml-provider/*",
+          "arn:aws:iam::*:policy/*",
+          "arn:aws:iam::*:oidc-provider/*",
+          "arn:aws:iam::*:instance-profile/*",
+          "arn:aws:iam::*:user/*",
+          "arn:aws:iam::*:role/*",
+          "arn:aws:iam::*:server-certificate/*",
+          "arn:aws:iam::*:sms-mfa/*",
+          "arn:aws:iam::*:group/*",
+          "arn:aws:iam::*:mfa/*/*"
+        ]
+      },
+      {
+        "Sid": "VisualEditor1",
+        "Effect": "Deny",
+        "Action": "iam:DeleteAccountPasswordPolicy",
+        "Resource": "*"
+      }
+    ]
+  }

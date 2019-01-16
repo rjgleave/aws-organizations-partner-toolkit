@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Metadata:
+  License: Apache-2.0
+Description:  Create all users and groups for Billing Master Account
+
+Parameters:
+  # this section is added to define the policy resources which will be imported.
+  PolicyStackName:
+    Description: >-
+      Name of an active CloudFormation stack that contains the policy
+      resources that will be used in this stack.
+    Type: String
+    MinLength: 1
+    MaxLength: 255
+    AllowedPattern: '^[a-zA-Z][-a-zA-Z0-9]*$'
+    # It is good practice to default the stack name, to document the name of the shared resource
+    Default: PolicyStack
+  # password for the org admin
+  OrgAdminPassword:
+    Type: String
+    NoEcho: True
+    MinLength: 1
+    Description: Password for the Org Admin
+  # password for the partner admin
+  PartnerAdminPassword:
+    Type: String
+    NoEcho: True
+    MinLength: 1
+    Description: Password for the Partner Admin
+
+Resources:
+
+  # user groups
+  PartnerAdminGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: PartnerAdminGroup
+      Path: "/"
+      ManagedPolicyArns: 
+      - arn:aws:iam::aws:policy/AdministratorAccess
+      - !ImportValue 
+        'Fn::Sub': '${PolicyStackName}-AllowAllBillingPolicy'
+      - !ImportValue 
+        'Fn::Sub': '${PolicyStackName}-DenyIamUpdatesPolicy'
+  OrgAdminGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: OrgAdminGroup
+      Path: "/"
+      ManagedPolicyArns: 
+      - arn:aws:iam::aws:policy/AdministratorAccess
+      - !ImportValue 
+        'Fn::Sub': '${PolicyStackName}-DenyAllBillingPolicy'
+      - !ImportValue 
+        'Fn::Sub': '${PolicyStackName}-DenyIamUpdatesPolicy'
+      - !ImportValue 
+        'Fn::Sub': '${PolicyStackName}-DenyScpDetachPolicy'
+      - !ImportValue 
+        'Fn::Sub': '${PolicyStackName}-DenyOrgUpdatesPolicy'
+
+  # admin users 
+  PartnerAdmin:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: PartnerAdmin
+      Path: "/"
+      LoginProfile:
+        Password: !Ref PartnerAdminPassword
+      Groups: 
+        - !Ref PartnerAdminGroup
+
+  OrgAdmin:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: OrgAdmin
+      Path: "/"
+      LoginProfile:
+        Password: !Ref OrgAdminPassword
+
+  # add users to groups
+
+  AddUserToGroup:
+    Type: AWS::IAM::UserToGroupAddition
+    DependsOn: 
+    - OrgAdminGroup
+    - OrgAdmin
+    Properties:
+      GroupName: !Ref OrgAdminGroup
+      Users:
+      - Ref: OrgAdmin
