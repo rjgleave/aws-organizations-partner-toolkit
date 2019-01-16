@@ -7,7 +7,9 @@ The scripts included in this toolkit will implement the reference architecture s
 
 ![Reference Architecture](https://github.com/rjgleave/aws-organizations-partner-toolkit/blob/master/assets/AWS-Orgs-for-Resellers.png)
 
-In this example, an on-premise process runs, followed by a cloud-based process.  At the completion of the on-premise process, an http message is posted to an api, which saves the transaction in DynamoDB.  A trigger on the dynamoDB table invokes a state machine (AWS Step Functions) which submits the job corresponding to the message.  Step Functions will monitor the job for success or failure, until its completion.   
+This model allows the partner to maintain ultimate ownership of the master payer account, including the root account itself.  The root account will create the organization, a parent OU and service control policies to apply to the organization root.   In addition, a billing administrator will be granted full rights to all billing and cost functions.  
+
+The institution will be given rights to all AWS services at any OU below the Organization root.   This includes full rights over the creation of OUs, SCPs and the ability to apply SCPs at any OU below the org root.  The institution admin can also invite accounts to join the organization.  No institution account or user will have the ability to access billing or cost features.   This includes any member accounts invited into the organization.
 
 
 What's Here
@@ -33,19 +35,13 @@ Setup Instructions
 
 Working Backwards, do the following:
 
-1. Create the state machine.  The easiest way to do this is to use the online jumpstart which will build it for you.  See instructions here:
-![Reference Architecture](https://github.com/rjgleave/aws-batch-api-submitter/blob/master/assets/step-function-sample-projects.png)
+1. Create a master payer account.
 
-2. Use the schema to build DynamoDB table.   Make sure you turn on streaming.
-3. Install the lambda to read the dynamodb stream.   You will need to modify it to pass in the input document and ARN of the state machine.    You can test it using the test_streams.json document.
-4. Create the API.  Use the provided mapping document.
+2. Run the python script to create the organization, parent OU and SCPs.  This will also apply the SCPs
+
+3. Run ghe cloudformation template to build all IAM groups, user profiles and policies.
+4. Invite accounts into the new organization.
 
 
 
 __Additional Resources__
-
-Blog: Using Amazon API Gateway as a proxy for DynamoDB
-https://aws.amazon.com/blogs/compute/using-amazon-api-gateway-as-a-proxy-for-dynamodb/
-
-SWS Step Functions
-https://aws.amazon.com/step-functions/
