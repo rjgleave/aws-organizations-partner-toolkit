@@ -39,7 +39,8 @@ Working Backwards, do the following:
 
 2. Run the python script to create the organization, parent OU and SCPs.  This will also apply the SCPs
 
-3. Run ghe cloudformation template to build all IAM groups, user profiles and policies.
+3. Run the cloudformation template to build all IAM groups, user profiles and policies.
+
 4. Invite accounts into the new organization.
 
 
