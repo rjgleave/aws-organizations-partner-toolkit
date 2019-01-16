@@ -5,7 +5,7 @@ This repository contains code to automate the setup of the master payer account 
 
 The scripts included in this toolkit will implement the following architecture below, including user groups, profiles, IAM policies, Service Control Policies (SCPs), Organization Units (OUs), etc. 
 
-![Reference Architecture](https://github.com/rjgleave/aws-batch-api-submitter/blob/master/assets/trigger-batch-using-api-gateway.png)
+![Reference Architecture](https://github.com/rjgleave/aws-organizations-partner-toolkit/blob/master/assets/AWS-Orgs-for-Resellers.png)
 
 ![](https://github.com/rjgleave/aws-batch-api-submitter/blob/master/assets/Trigger-AWS-Batch-Integration-Job-Using-API-Gateway.png)
 
