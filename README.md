@@ -11,7 +11,7 @@ This model allows the partner to maintain ultimate ownership of the master payer
 
 Day-to-day activities in the master payer account will be carried out by the billing administrator and org administrator profiles.   The billing administrator will be granted full rights to all billing and cost functions.  The org administrator will be granted rights to all AWS services at any OU below the Organization root.  This includes the ability to define OUs, SCPs and the ability to apply SCPs at any OU below the org root.  The org admin can also invite accounts to join the organization.  
 
-No institution account or user will have the ability to access billing or cost features.   This includes any member accounts invited into the organization.
+Service control policies applied at the organization root will automatically deny access to billing and cost features for any member account that joins the organization.   However, SCPs will also automatically grant full access to all other AWS services to those same member accounts.
 
 
 What's Here
