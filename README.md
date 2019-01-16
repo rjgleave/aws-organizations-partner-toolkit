@@ -7,9 +7,11 @@ The scripts included in this toolkit will implement the reference architecture s
 
 ![Reference Architecture](https://github.com/rjgleave/aws-organizations-partner-toolkit/blob/master/assets/AWS-Orgs-for-Resellers.png)
 
-This model allows the partner to maintain ultimate ownership of the master payer account, including the root account itself.  The root account will create the organization, a parent OU and service control policies to apply to the organization root.   In addition, a billing administrator will be granted full rights to all billing and cost functions.  
+This model allows the partner to maintain ultimate ownership of the master payer account, including the root account profile.  The root account profile will be used to create an organization, a parent OU and service control policies to apply to the organization root.  It will also create all IAM objects (groups, users and policies) to support billing and organization activities in the master payer account.  
 
-The institution will be given rights to all AWS services at any OU below the Organization root.   This includes full rights over the creation of OUs, SCPs and the ability to apply SCPs at any OU below the org root.  The institution admin can also invite accounts to join the organization.  No institution account or user will have the ability to access billing or cost features.   This includes any member accounts invited into the organization.
+Day-to-day activities in the master payer account will be carried out by the billing administrator and org administrator profiles.   The billing administrator will be granted full rights to all billing and cost functions.  The org administrator will be granted rights to all AWS services at any OU below the Organization root.  This includes the ability to define OUs, SCPs and the ability to apply SCPs at any OU below the org root.  The org admin can also invite accounts to join the organization.  
+
+No institution account or user will have the ability to access billing or cost features.   This includes any member accounts invited into the organization.
 
 
 What's Here
