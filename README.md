@@ -20,7 +20,7 @@ What's Here
 This repo includes:
 
 1. README.md - this file
-2. FOLDER: python - 
+2. FOLDER: python (FUTURE - to replace manual Org creation steps below)
     *   the root organization - with all AWS services enabled
     *   the institution's parent OU
     *   service control policies (SCPs)
