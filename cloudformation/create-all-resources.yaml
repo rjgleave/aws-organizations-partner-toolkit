@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: AWS CloudFormation template to automate IAM setup for Partner (DLT) Master Account
+Description: AWS CloudFormation template to automate IAM setup for Partner (reseller) Master Account. 
 
 Parameters:
 
@@ -115,7 +115,7 @@ Resources:
           Action:
           - organizations:DetachPolicy
           Resource:
-          - arn:aws:organizations::166631568452:policy/o-idxghyb7pw/service_control_policy/p-nqtkz47h
+          - arn:aws:organizations::111111111111:policy/o-idxghyb7pw/service_control_policy/p-nqtkz47h
       Groups:
         - Ref: OrgAdminGroup
     DependsOn: OrgAdminGroup
@@ -173,18 +173,7 @@ Resources:
                               "iam:DeletePolicyVersion",
                               "iam:SetDefaultPolicyVersion"
                             ],
-                            "Resource": [
-                              "arn:aws:iam::*:saml-provider/*",
-                              "arn:aws:iam::*:policy/*",
-                              "arn:aws:iam::*:oidc-provider/*",
-                              "arn:aws:iam::*:instance-profile/*",
-                              "arn:aws:iam::*:user/*",
-                              "arn:aws:iam::*:role/*",
-                              "arn:aws:iam::*:server-certificate/*",
-                              "arn:aws:iam::*:sms-mfa/*",
-                              "arn:aws:iam::*:group/*",
-                              "arn:aws:iam::*:mfa/*/*"
-                            ]
+                            "Resource": "*"
                           },
                           {
                             "Effect": "Deny",

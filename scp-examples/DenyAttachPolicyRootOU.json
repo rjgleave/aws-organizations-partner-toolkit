@@ -5,7 +5,7 @@
             "Sid": "VisualEditor0",
             "Effect": "Deny",
             "Action": "organizations:AttachPolicy",
-            "Resource": "arn:aws:organizations:::ou/o-/ou-arn:aws:organizations::166631568452:root/o-idxghyb7pw/r-kdu4"
+            "Resource": "arn:aws:organizations:::ou/o-/ou-arn:aws:organizations::111111111111:root/o-idxghyb7pw/r-kdu4"
         }
     ]
 }

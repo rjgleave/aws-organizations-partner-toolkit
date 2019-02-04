@@ -35,11 +35,15 @@ the following objects in the master billing account, including:
 Setup Instructions
 ------------------
 
-Working Backwards, do the following:
+Working Backwards, execute the following steps:
 
 1. Create a master payer account.
 
-2. Run the python script to create the organization, parent OU and SCPs.  This will also apply the SCPs
+2. Create the organization.   Instructions here: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_create.html  NOTE: Specify that you want to create the organization with ALL FEATURES enabled.
+
+3. Create an OU within the root in your organization.   Instructions here: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_ous.html Add other OUs to your organizational hierarchy as desired.
+
+4. Create Service Control Policies.    See the SCP folder described above for examples.  You should tailor the SCPs to meet your own security requirements and needs.  Typically, resellers may want to allow the use of all AWS services but deny all billing access and prevent changing SCPs applied at the root OU.  Please NOTE: some of the example policies are defined to affect specific resource ARNs (scan for Resources with the account number 111111111111.  Substitute your root OU ARN and account#)
 
 3. Run the cloudformation template to build all IAM groups, user profiles and policies.
 
