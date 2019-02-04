@@ -131,18 +131,7 @@ Resources:
                               "iam:DeletePolicyVersion",
                               "iam:SetDefaultPolicyVersion"
                             ],
-                            "Resource": [
-                              "arn:aws:iam::*:saml-provider/*",
-                              "arn:aws:iam::*:policy/*",
-                              "arn:aws:iam::*:oidc-provider/*",
-                              "arn:aws:iam::*:instance-profile/*",
-                              "arn:aws:iam::*:user/*",
-                              "arn:aws:iam::*:role/*",
-                              "arn:aws:iam::*:server-certificate/*",
-                              "arn:aws:iam::*:sms-mfa/*",
-                              "arn:aws:iam::*:group/*",
-                              "arn:aws:iam::*:mfa/*/*"
-                            ]
+                            "Resource": "*"
                           },
                           {
                             "Effect": "Deny",

@@ -35,20 +35,27 @@ the following objects in the master billing account, including:
 Setup Instructions
 ------------------
 
-Working Backwards, execute the following steps:
+Working backwards, execute the following steps:
 
 1. Create a master payer account.
 
-2. Create the organization.   Instructions here: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_create.html  NOTE: Specify that you want to create the organization with ALL FEATURES enabled.
+2. Create your organization.   Instructions here: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_create.html  NOTE: Specify that you want to create the organization with ALL FEATURES enabled.
 
 3. Create an OU within the root in your organization.   Instructions here: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_ous.html Add other OUs to your organizational hierarchy as desired.
 
-4. Create Service Control Policies.    See the SCP folder described above for examples.  You should tailor the SCPs to meet your own security requirements and needs.  Typically, resellers may want to allow the use of all AWS services but deny all billing access and prevent changing SCPs applied at the root OU.  Please NOTE: some of the example policies are defined to affect specific resource ARNs (scan for Resources with the account number 111111111111.  Substitute your root OU ARN and account#)
+4. Create any service control policies that you would like to see enforced across all member accounts in the organization.  Then attach them to the root OU.  Any SCPs applied at the root OU will cascade down to all member accounts in the organization.  See the SCP folder described above for examples.  You should tailor the SCPs to meet your own business requirements and operating model.  
+
+Typically, resellers will want to whitelist the use of all AWS services for their customer accounts (see FullAWSAccessSCP).   
+
+Also, resellers may decide to deny all billing access to member accounts (see DenyAllBillingSCP for example).  More examples identified here: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-permissions-ref.html#ExampleAllowAllDenyBilling
+
+ Resellers will want to protect the SCPs that they define.  One way to do this is to specifically DENY changes to those specific policies.  Some of the example policies in this repo are defined to protect specific resource ARNs  In these examples you can scan for Resources with the account number 101010101010.  You will need to substitute your root OU ARN and account numbers if you want to use these examples.   
+ 
+ Another strategy to protect SCPs is to prevent deny access to the root OU for any customer admins (see DenyAttachPolicyRootOU).  Since all reseller SCPs will be attached at the root OU, this will protect them.   
 
 3. Run the cloudformation template to build all IAM groups, user profiles and policies.
 
 4. Invite accounts into the new organization.
-
 
 
 __Additional Resources__
