@@ -5,7 +5,7 @@ This repository contains code to automate the setup of the master payer account 
 
 The scripts included in this toolkit will implement the reference architecture shown below, including user groups, profiles, IAM policies, Service Control Policies (SCPs), Organization Units (OUs), etc. 
 
-![Reference Architecture](https://github.com/rjgleave/aws-organizations-partner-toolkit/blob/master/assets/AWS%20Orgs%20for%20Resellers.png)
+![Reference Architecture](https://github.com/rjgleave/aws-organizations-partner-toolkit/blob/master/assets/AWS-orgs-for-resellers-v2.png)
 
 This model allows the partner to maintain ultimate ownership of the master payer account, including the root account profile.  
 
