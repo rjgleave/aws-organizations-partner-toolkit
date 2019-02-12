@@ -49,10 +49,9 @@ To set up your master payer account, do the following:
 
 Typically, resellers will start by whitelisting the use of all AWS services for their customer member accounts (see FullAWSAccessSCP) while denying access to billing and cost reporting (see DenyAllBillingSCP).  Each reseller should implement the policies that meet their business objectives. This link contains many other example policies: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-permissions-ref.html#ExampleAllowAllDenyBilling
 
-Resellers should protect the SCPs that they define.  One way to do this is to specifically DENY changes to those specific policies.  Some of the example policies in this repository show how to protect specific resource ARNs  In these examples you can scan for Resources with the account number 101010101010.  Substitute your root OU ARN and account numbers if you want to use these examples.   
+Resellers should protect the SCPs that they define.  One way to do this is to specifically DENY changes to those specific policy resources.  Some of the example policies in this repository show how to protect specific resource ARNs.  Look for Resources with the account number 101010101010 to see them.  Substitute your root OU ARN and account numbers if you want to use these examples.   
 
-Another strategy to protect SCPs is to prevent deny access to the root OU for any customer admins (see DenyAttachPolicyRootOU).  Since all reseller SCPs will be attached at the root OU, this will protect them.   
-
+Another strategy to protect SCPs is to prevent deny access to the root OU for any customer admins (see DenyAttachPolicyRootOU).  Since all reseller SCPs will be attached at the root OU, this will help protect them as well.   
 3. Run the cloudformation template to build all IAM groups, user profiles and policies.
 
 4. Invite accounts into the new organization.
