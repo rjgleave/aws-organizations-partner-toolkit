@@ -25,70 +25,20 @@ __author__ = '@author@'
 __email__ = '@email@'
 
 
-def create_organization(
-        feature_set):
+
+def get_template(template_file):
 
     '''
-        Create a new AWS organization for the account. 
+        Read a template file and return the contents
     '''
 
-    client = boto3.client('organizations')
-    try:
-        create_organization_response = client.create_organization(FeatureSet=feature_set)
-
-    except botocore.exceptions.ClientError as e:
-        print(e)
-        sys.exit(1)
-
-    print('Creating a New Organization...')
-    print(create_organization_response)
-    print('')
-
-    return create_organization_response
+    print("Reading resources from " + template_file)
+    f = open(template_file, "r")
+    cf_template = f.read()
+    return cf_template
 
 
-def describe_account(
-        account_id):
-
-    '''
-        Describe the AWS account 
-    '''
-
-    client = boto3.client('organizations')
-    try:
-        describe_account_response = client.describe_account(AccountId=account_id)
-
-    except botocore.exceptions.ClientError as e:
-        print(e)
-        sys.exit(1)
-
-    print('describe account here')
-    print(describe_account_response)
-
-    return describe_account_response
-
-
-def list_roots():
-
-    '''
-        List the roots in the current organization 
-    '''
-
-    client = boto3.client('organizations')
-    try:
-        list_roots_response = client.list_roots()
-
-    except botocore.exceptions.ClientError as e:
-        print(e)
-        sys.exit(1)
-
-    print('List of Roots here:')
-    print(list_roots_response)
-
-    return list_roots_response
-
-
-def deploy_resources(credentials, template, stack_name, stack_region, admin_username, admin_password):
+def deploy_resources(template, stack_name, stack_region, org_admin_password, partner_admin_password):
 
     '''
         Create a CloudFormation stack of resources within the new account
@@ -96,9 +46,6 @@ def deploy_resources(credentials, template, stack_name, stack_region, admin_user
 
     datestamp = time.strftime("%d/%m/%Y")
     client = boto3.client('cloudformation',
-                          aws_access_key_id=credentials['AccessKeyId'],
-                          aws_secret_access_key=credentials['SecretAccessKey'],
-                          aws_session_token=credentials['SessionToken'],
                           region_name=stack_region)
     print("Creating stack " + stack_name + " in " + stack_region)
 
@@ -111,12 +58,12 @@ def deploy_resources(credentials, template, stack_name, stack_region, admin_user
                 TemplateBody=template,
                 Parameters=[
                     {
-                        'ParameterKey' : 'AdminUsername',
-                        'ParameterValue' : admin_username
+                        'ParameterKey' : 'OrgAdminPassword',
+                        'ParameterValue' : org_admin_password
                     },
                     {
-                        'ParameterKey' : 'AdminPassword',
-                        'ParameterValue' : admin_password
+                        'ParameterKey' : 'PartnerAdminPassword',
+                        'ParameterValue' : partner_admin_password
                     }
                 ],
                 NotificationARNs=[],
@@ -164,7 +111,7 @@ def deploy_resources(credentials, template, stack_name, stack_region, admin_user
 
     stack = client.describe_stacks(StackName=stack_name)
     return stack
-  
+
 
 def main(arguments):
 
@@ -172,56 +119,28 @@ def main(arguments):
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument('--account_name', required=True)
-    parser.add_argument('--account_email', required=True)
-    parser.add_argument('--account_role',
-                        default='OrganizationAccountAccessRole')
+    parser.add_argument('--org_admin_password', required=True)
+    parser.add_argument('--partner_admin_password', required=True)
+
     parser.add_argument('--template_file',
-                        default='baseline.yml')
+                        default='create-all-resources.yaml')
     parser.add_argument('--stack_name',
-                        default='Baseline')
+                        default='master-payer-resources')
     parser.add_argument('--stack_region',
                         default='us-east-1')
-    parser.add_argument('--admin_username', required=True)
-    parser.add_argument('--admin_password', required=True)
-    #parser.add_argument('--account_id', default='166631568452', required=True)
 
     args = parser.parse_args(arguments)
-    
+
     access_to_billing = "DENY"
     organization_unit_id = None
     scp = None
 
-
-    '''
-    # describe the account                
-    account_id = '166631568452'
-    print("Displaying account: " + account_id)
-    describe_account_response = describe_account(account_id)
-    '''
-
-    # 1 - build users, groups, policies via cloudformation
     print("Deploying resources from " + args.template_file + " as " + args.stack_name + " in " + args.stack_region)
     template = get_template(args.template_file)
-    stack = deploy_resources(credentials, template, args.stack_name, args.stack_region, args.admin_username, args.admin_password)
+    stack = deploy_resources(template, args.stack_name, args.stack_region, args.org_admin_password, args.partner_admin_password)
     print(stack)
     print("Resources deployed for account " + account_id + " (" + args.account_email + ")")
-     
-    # 2 - create an organization
-    feature_set = 'ALL'
-    print("Creating organization...  FeatureSet = " + feature_set)
-    create_organization_response = create_organization(feature_set)
-    
-    # 3 - list root of the org
-    list_roots_response = list_roots()
-
-    # 4 - create service control policies
-
-    # 5 - attach SCPs to the OUs
-    # root - FullAWSAccessSCP
-    # parent OU - DenyAllBillingSCP 
 
 
-    
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
