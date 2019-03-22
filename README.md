@@ -22,7 +22,14 @@ What's Here
 This repository includes:
 
 1. README.md - this file
+<<<<<<< HEAD
 2. FOLDER: boto3 - standard AWS python SDK 
+=======
+2. FOLDER: python (FUTURE - to replace manual Org creation steps below)
+    *   the root organization - with all AWS services enabled
+    *   the institution's parent OU
+    *   service control policies (SCPs)
+>>>>>>> 8b192531414b50a62508a3afd1c3a364dd541a1a
 3. FOLDER: cloudformation - this contains cloudformation code to create
 the following objects in the master billing account, including:
     *   IAM admin groups, users and policies
@@ -44,6 +51,7 @@ To set up your master payer account, do the following:
 1. Create a master payer account.
 
 2. Create your organization.   Instructions here: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_create.html  NOTE: Specify that you want to create the organization with ALL FEATURES enabled.
+<<<<<<< HEAD
 
 3. Create an OU within the root in your organization.   Instructions here: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_ous.html Add other OUs to your organizational hierarchy as desired.
 
@@ -58,8 +66,24 @@ An additional measure to protect SCPs is to deny access to the root OU for any c
 5. Run the cloudformation template to build all IAM groups, user profiles and policies.
 
 6. Invite accounts into the new organization.
+=======
 
+3. Create an OU within the root in your organization.   Instructions here: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_ous.html Add other OUs to your organizational hierarchy as desired.
 
+4. Create any service control policies that you would like to see enforced across all member accounts in the organization.  Attach those SCPs to the root OU.  Any SCPs applied at the root OU will cascade down to all member accounts in the organization.  See the SCP folder described above for examples.  You should tailor the SCPs to meet your own business requirements and operating model.  
+>>>>>>> 8b192531414b50a62508a3afd1c3a364dd541a1a
+
+Typically, resellers will start by whitelisting the use of all AWS services for their customer member accounts (see FullAWSAccessSCP) while denying access to billing and cost reporting (see DenyAllBillingSCP).  Each reseller should implement the policies that meet their business objectives. This link contains many other example policies: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-permissions-ref.html#ExampleAllowAllDenyBilling
+
+<<<<<<< HEAD
 NOTE: (FUTURE ONLY) - python approach.  Run the script below from the command line.
 
 python create_org_resources.py --org_admin_password <org admin password here>  --partner_admin_password <partner admin password here>
+=======
+Resellers should protect the SCPs that they define.  One way to do this is to specifically DENY changes to those specific policy resources.  Some of the example policies in this repository show how to protect specific resource ARNs.  Look for Resources with the account number 101010101010 to see them.  Substitute your root OU ARN and account numbers if you want to use these examples.   
+
+Another strategy to protect SCPs is to prevent deny access to the root OU for any customer admins (see DenyAttachPolicyRootOU).  Since all reseller SCPs will be attached at the root OU, this will help protect them as well.   
+3. Run the cloudformation template to build all IAM groups, user profiles and policies.
+
+4. Invite accounts into the new organization.
+>>>>>>> 8b192531414b50a62508a3afd1c3a364dd541a1a

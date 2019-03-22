@@ -1,0 +1,41 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Deny",
+        "Action": [
+          "iam:UpdateAssumeRolePolicy",
+          "iam:PutRolePermissionsBoundary",
+          "iam:DeletePolicy",
+          "iam:AttachRolePolicy",
+          "iam:PutRolePolicy",
+          "iam:DeleteRolePermissionsBoundary",
+          "iam:CreateUser",
+          "iam:RemoveUserFromGroup",
+          "iam:DetachRolePolicy",
+          "iam:DeleteRolePolicy",
+          "iam:DetachGroupPolicy",
+          "iam:DetachUserPolicy",
+          "iam:CreatePolicyVersion",
+          "iam:PutGroupPolicy",
+          "iam:CreateGroup",
+          "iam:PutUserPermissionsBoundary",
+          "iam:DeleteUserPolicy",
+          "iam:AttachUserPolicy",
+          "iam:DeleteUserPermissionsBoundary",
+          "iam:CreatePolicy",
+          "iam:AttachGroupPolicy",
+          "iam:PutUserPolicy",
+          "iam:DeleteGroupPolicy",
+          "iam:DeletePolicyVersion",
+          "iam:SetDefaultPolicyVersion"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Effect": "Deny",
+        "Action": "iam:DeleteAccountPasswordPolicy",
+        "Resource": "*"
+      }
+    ]
+  }
