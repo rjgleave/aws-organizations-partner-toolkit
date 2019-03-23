@@ -60,6 +60,9 @@ An additional measure to protect SCPs is to deny access to the root OU for any c
 6. Invite accounts into the new organization.
 
 
-NOTE: (FUTURE ONLY) - python approach.  Run the script below from the command line.
 
-python create_org_resources.py --org_admin_password <org admin password here>  --partner_admin_password <partner admin password here>
+Future Enhancements:
+--------------------
+To try the python-based approach:  Run the script below from the command line.
+
+python create_org_resources.py --org_admin_password <<ORG ADMIN PASSWORD HERE>>  --partner_admin_password <<PARTNER PASSWORD HERE>>
