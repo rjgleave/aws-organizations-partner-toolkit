@@ -118,7 +118,7 @@ Resources:
           Action:
           - organizations:DetachPolicy
           Resource:
-          - arn:aws:organizations::166631568452:policy/o-idxghyb7pw/service_control_policy/p-nqtkz47h
+          - arn:aws:organizations::101010101010:policy/o-idxghyb7pw/service_control_policy/p-nqtkz47h
       Groups:
         - Ref: OrgAdminGroup
     DependsOn: OrgAdminGroup
