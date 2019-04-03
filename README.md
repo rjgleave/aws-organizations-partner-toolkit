@@ -65,4 +65,4 @@ Future Enhancements:
 --------------------
 To try the python-based approach:  Run the script below from the command line.
 
-python create_org_resources.py --org_admin_password [ORG ADMIN PASSWORD HERE]  --partner_admin_password [PARTNER PASSWORD HERE]
+python create_org_resources.py --org_admin_password  [ORG ADMIN PASSWORD HERE]  --partner_admin_password   [PARTNER PASSWORD HERE]

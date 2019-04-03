@@ -29,6 +29,12 @@ Parameters:
     MinLength: 1
     Description: Password for the Partner Admin
 
+  ProtectedSCPArn:
+    Type: String
+    NoEcho: True
+    MinLength: 1
+    Description: ARN of the partner SCP which must be protected
+
 Resources:
   # -------------------------------------------------------------------------
   # IAM groups for Administrator Profiles - set policies here
@@ -105,7 +111,7 @@ Resources:
     DependsOn: OrgAdminGroup
 
   # IAM Policy - to be applied to Customer Org Aministrators
-  # do not allow Org Admin to detach any SCPs
+  # do not allow Org Admin to detach any partner SCPs
   DenyScpDetachPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -117,8 +123,9 @@ Resources:
         - Effect: Deny
           Action:
           - organizations:DetachPolicy
-          Resource:
-          - arn:aws:organizations::101010101010:policy/o-idxghyb7pw/service_control_policy/p-nqtkz47h
+          - organizations:DeletePolicy
+          - organizations:UpdatePolicy
+          Resource: !Ref ProtectedSCPArn
       Groups:
         - Ref: OrgAdminGroup
     DependsOn: OrgAdminGroup
