@@ -30,7 +30,7 @@ the following objects in the master billing account, including:
     *   IAM policies to protect the root organization and prevent unauthorized access to billing.
 4. FOLDER: scp-examples  
 5. FOLDER: iam-policy-examples
-6. create_org_resources.py (FUTURE) This is a python script to fire a fully automated process which will eventually replace manual Org creation steps.  It will do the following:
+6. create_org_resources.py   This is a python script to fire a fully automated process which will eventually replace manual Org creation steps.  It will do the following:
     *   create the root organization - with all AWS services enabled
     *   create the institution's parent OU
     *   create reseller service control policies (SCPs)
