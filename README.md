@@ -36,7 +36,11 @@ the following objects in the master billing account, including:
     *   create reseller service control policies (SCPs)
 7. create-all-resources.yaml   This is a cloudformation template which creates all of the IAM groups, roles and admin users described below.   
 
-There are two options for resellers to build out this environment for a customer:
+* * * * * * * * * * 
+* * * SETUP * * * *
+* * * * * * * * * *
+
+THERE ARE TWO OPTIONS FOR RESELLERS FOR CONFIGURING A NEW MASTER PAYER ACCOUNT:
 
 Option 1: Manual setup: Instructions
 ------------------------------------
