@@ -68,6 +68,8 @@ Option 2: Automated setup: Instructions
 
 1. Create a master payer account.
 
+2. Configure your AWS CLI so that it references your new master payer account (for more information, please see: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+
 2. Run the script below from the command line.   It will perform steps 2-5 of the manual option, as described previously.
 
 python create_org_resources.py --org_admin_password  [ORG ADMIN PASSWORD HERE]  --partner_admin_password   [PARTNER PASSWORD HERE]
