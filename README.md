@@ -36,8 +36,10 @@ the following objects in the master billing account, including:
     *   create reseller service control policies (SCPs)
 7. create-all-resources.yaml   This is a cloudformation template which creates all of the IAM groups, roles and admin users described below.   
 
-Setup Instructions
-------------------
+There are two options for resellers to build out this environment for a customer:
+
+Option 1: Manual setup: Instructions
+------------------------------------
 
 To set up your master payer account, do the following:
 
@@ -61,8 +63,13 @@ An additional measure to protect SCPs is to deny access to the root OU for any c
 
 
 
-Future Enhancements:
---------------------
-To try the python-based approach:  Run the script below from the command line.
+Option 2: Automated setup: Instructions
+---------------------------------------
+
+1. Create a master payer account.
+
+2. Run the script below from the command line.   It will perform steps 2-5 of the manual option, as described previously.
 
 python create_org_resources.py --org_admin_password  [ORG ADMIN PASSWORD HERE]  --partner_admin_password   [PARTNER PASSWORD HERE]
+
+3. Invite accounts into the new organization.
