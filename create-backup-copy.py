@@ -15,12 +15,9 @@ import sys
 import argparse
 import json
 
-'''
-AWS Organizations Create Account and Provision Resources via CloudFormation
+'''AWS Organizations Create Account and Provision Resources via CloudFormation
 
-This module creates a new organization (if needed) using the Organizations API, 
-then calls CloudFormation to deploy baseline resources within that account via a 
-local tempalte file.
+This module creates a new account using Organizations, then calls CloudFormation to deploy baseline resources within that account via a local tempalte file.
 
 '''
 
@@ -29,37 +26,53 @@ __author__ = '@author@'
 __email__ = '@email@'
 
 
-def get_org(feature_set):
+def describe_org(feature_set):
 
     '''
         Get properties of existing AWS organization 
     '''
-    client = boto3.client('organizations')
 
     org_status = 'NOT_FOUND'
-    org_id = 'NONE'
-
-    print("Checking organization status...")
-
+    OrganizationId=None
+    print("Checking organization status: " + org_status)
+    client = boto3.client('organizations')
     try:
         org_response = client.describe_organization()
 
-        # get the org ID
-        OrganizationId=org_response.get('Organization').get('Id')
-        print("Org ID is:" + OrganizationId)
-        if OrganizationId: 
-            org_status = 'FOUND'
-            org_id = OrganizationId
-            print("Organization ID:" + org_id + " " + org_status)
+        if org_status == 'ENABLED':
+            #print(org_response)
+            OrganizationId=org_response.get('Organization').get('Id')
+            print("Org ID is:" + OrganizationId)
+            if OrganizationId: 
+                org_status = 'FOUND'
+            else:
+                time.sleep(10)
+                org_response = client.describe_organization()
+                print("Create organization status: " + org_status)
+
+            root_id = client.list_roots().get('Roots')[0].get('Id')
+            #roots_list_response = client.list_roots().get('Roots')
+            #print("List of Roots: ", roots_list_response)
+
+            # Enable the SERVICE CONTROL policy type in the new org
+            try:
+                enable_policy_response = client.enable_policy_type(
+                    RootId=root_id,
+                    PolicyType='SERVICE_CONTROL_POLICY'
+                )
+                #print("Enable policy response", enable_policy_response)
+                # delay needed here - give the process time to finish or the subsequent create-policy routine will conflict/fail
+                print('enabling the policy...')
+                time.sleep(10)  
+            except botocore.exceptions.ClientError as e:
+                print('SERVICE CONTROL policy type NOT enabled...')
+                print(e)
 
     except botocore.exceptions.ClientError as e:
-        print("Oganization not found")
-        #print(e)
-        # create the organization
-        org_status, org_id = create_org(feature_set)
+    print("Checking organization status: " + org_status)
+    print(e)
 
-
-    return org_status, org_id
+    return org_status, OrganizationId, root_id
 
 
 def create_org(feature_set):
@@ -67,47 +80,20 @@ def create_org(feature_set):
     '''
         Create a new AWS organization 
     '''
+
+    org_status = 'IN_PROGRESS'
+    OrganizationId=None
+    print("Create organization status: " + org_status)
     client = boto3.client('organizations')
-
-    org_id = 'NONE'
-
-    '''
-    # check to see if org exists
-    print("Checking organization status...")
-    OrganizationId=client.describe_organization().get('Organization').get('Id')
-    if OrganizationId: 
-        org_status = 'FOUND'
-        org_id = OrganizationId
-    else:
-        # create organization
-    '''
-
-    print("Organization does not exist...")
-    print("Creating organization...")
-    
     try:
         org_response = client.create_organization(FeatureSet=feature_set)
-        # get the org ID
-        OrganizationId=org_response.get('Organization').get('Id')
-        print("Org ID is:" + OrganizationId)
-        if OrganizationId: 
-            org_status = 'CREATED'
-            org_id = OrganizationId
-            print("Organization ID:" + org_id + " " + org_status)         
-
-        '''
-        # get the root ID
-        list_roots_response = client.list_roots()
-        root_id = list_roots_response.get('Roots')[0].get('Id')
-        print('Root ID is: ' + root_id)
-        '''
-
 
     except botocore.exceptions.ClientError as e:
-        print('Error: Organization could NOT be created...')
+        print('Organization does NOT EXIST...')
         print(e)
+        org_response = client.describe_organization()
+        #sys.exit(1)
 
-    '''
     while org_status == 'IN_PROGRESS':
         #print(org_response)
         OrganizationId=org_response.get('Organization').get('Id')
@@ -119,7 +105,6 @@ def create_org(feature_set):
             org_response = client.describe_organization()
             print("Create organization status: " + org_status)
 
- 
     root_id = client.list_roots().get('Roots')[0].get('Id')
     #roots_list_response = client.list_roots().get('Roots')
     #print("List of Roots: ", roots_list_response)
@@ -134,81 +119,40 @@ def create_org(feature_set):
         # delay needed here - give the process time to finish or the subsequent create-policy routine will conflict/fail
         print('enabling the policy...')
         time.sleep(10)  
-
     except botocore.exceptions.ClientError as e:
         print('SERVICE CONTROL policy type NOT enabled...')
         print(e)
-    '''
 
-    return org_status, org_id
-
+    return OrganizationId, root_id, org_status
 
 
-def enable_SCP_policy_type():
+def create_scp(policy_name,policy_description,policy_type,policy_statement,root_id):
 
     '''
-        Enable the SCP policy type 
+        Create a new Service Control Policy 
     '''
+    print("Creating policy... " + policy_name)
 
     client = boto3.client('organizations')
-
-    scp_type_status = 'NOT_ENABLED'
-    print("Checking the SCP policy type...")
-
-    # check to see if SCP policy type is enabled
-    list_roots_response = client.list_roots()
-    root_id = list_roots_response.get('Roots')[0].get('Id')
-    policy_types = list_roots_response.get('Roots')[0].get('PolicyTypes')
-    for p_type in policy_types:
-        if p_type.get('Type') == 'SERVICE_CONTROL_POLICY':
-            scp_type_status = p_type.get('Status')
-
-    # Enable the SERVICE CONTROL policy type in the new org
-    if scp_type_status != "ENABLED":
-        try:
-            enable_policy_type_response = client.enable_policy_type(
-                RootId=root_id,
-                PolicyType='SERVICE_CONTROL_POLICY'
-            )
-
-            # delay needed here - give the process time to finish or the subsequent create-policy routine will conflict/fail
-            print('please wait...enabling the policy...')
-            time.sleep(10)  
-
-            print("Enable policy response", enable_policy_type_response)
-
-            # check status of SCP policy type 
-            policy_types = enable_policy_type_response.get('Root').get('PolicyTypes')
-            for p_type in policy_types:
-                if p_type.get('Type') == 'SERVICE_CONTROL_POLICY':
-                    scp_type_status = p_type.get('Status')
-            
-            print('scp_type status >>>>')
-            print(scp_type_status)
-
-        except botocore.exceptions.ClientError as e:
-            print('ERROR! SERVICE CONTROL policy type NOT enabled...')
-            print(e)
-
-    return scp_type_status
-
-
-def create_scp(policy_name,policy_description,policy_type,policy_statement):
-
-    '''
-        Create a new Service Control Policy and attach to the root of the organization
-    '''
-
-    client = boto3.client('organizations')
+    try:
+        # create the policy
+        create_policy_response = client.create_policy(
+            Content=json.dumps(policy_statement),
+            Description=policy_description,
+            Name=policy_name,
+            Type='SERVICE_CONTROL_POLICY'
+        )
+    except botocore.exceptions.ClientError as e:
+        print('SCP NOT created...')
+        print(e)
 
     # see if the SCP already exists
-    print("Checking service control policy... " + policy_name)
     list_policies_response = client.list_policies(
-        Filter='SERVICE_CONTROL_POLICY'
+        Filter='SERVICE_CONTROL_POLICY',
+        MaxResults=20
     )
-    scp_id = "NONE"
-    scp_arn = "NONE"
-
+    #print("List of policies >>> ",list_policies_response)
+    #print("Policy response2>>> ",json.dumps(list_policy_response))
     policies = list_policies_response.get("Policies")
     for policy in policies:
         scp_name=policy.get('Name')
@@ -216,38 +160,15 @@ def create_scp(policy_name,policy_description,policy_type,policy_statement):
             scp_id=policy.get('Id')
             scp_arn=policy.get('Arn')
 
-    ## if SCP does not exist, then create it
-    if scp_id == 'NONE':
-        print("Creating policy... " + policy_name)
-        try:
-            # create the policy
-            create_policy_response = client.create_policy(
-                Content=json.dumps(policy_statement),
-                Description=policy_description,
-                Name=policy_name,
-                Type='SERVICE_CONTROL_POLICY'
-            )
-
-            # get the details for the new policy
-            scp_id = create_policy_response.get('Policy').get('PolicySummary').get('Id')
-            scp_arn = create_policy_response.get('Policy').get('PolicySummary').get('Arn')
-
-        except botocore.exceptions.ClientError as e:
-            print('Warning: SCP NOT created...')
-            print(e)
-
     # attach the policy to the root
-    root_id = client.list_roots().get('Roots')[0].get('Id')
     try:
         attach_policy_response = client.attach_policy(
             PolicyId=scp_id,
             TargetId=root_id
         )
     except botocore.exceptions.ClientError as e:
-        # exit if stack already exists
-        e_msg=str(e)
-        if e_msg=='An error occurred (DuplicatePolicyAttachmentException) when calling the AttachPolicy operation: A policy with the specified name and type already exists.':
-            print('Policy already attached...')
+        print('Policy NOT attached...')
+        print(e)
 
     return scp_id, scp_arn
 
@@ -323,12 +244,12 @@ def deploy_resources(template, stack_name, stack_region, org_admin_password, par
             )
         except botocore.exceptions.ClientError as e:
             creating_stack = True
+            print(e)
+
             # exit if stack already exists
             e_msg=str(e)
             if e_msg=='An error occurred (AlreadyExistsException) when calling the CreateStack operation: Stack [master-payer-resources] already exists':
-                print("Stack already exists... stack not created...")
-                print("================ COMPLETE ==================")
-                print(".")
+                print("Stack construction failed.")
                 sys.exit(1) 
             else:        
                 print("Retrying...")
@@ -336,7 +257,7 @@ def deploy_resources(template, stack_name, stack_region, org_admin_password, par
 
     stack_building = True
     print("Stack creation in process...")
-    #print(create_stack_response)
+    print(create_stack_response)
     try_count=0
     while stack_building is True:
         try_count+=1
@@ -363,7 +284,6 @@ def deploy_resources(template, stack_name, stack_region, org_admin_password, par
 
 def main(arguments):
 
-    # accept incoming command line parameters
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -381,29 +301,26 @@ def main(arguments):
     args = parser.parse_args(arguments)
 
     # define constants
+    POLICY_TYPE='SERVICE_CONTROL_POLICY'
+    access_to_billing = "DENY"
     organization_unit_id = None
     feature_set = 'ALL'
     scp = None
 
-  
     # check to see if the organization already exists
-    print(".")
-    print("=============  ORGANIZATION ===============")
-    org_status, org_id = get_org(feature_set)
-    print("================ COMPLETE ==================")
-    print(".")
+    print("Checking for existing organization...")
+    org_id, root_id = create_org(feature_set)
+    print("Complete!  Org ID: " + org_id + " Root ID: " + root_id)
 
-
-    print(".")
-    print("================ SCPs  =====================")
-    # if SCP policy type not yet enabled on the organization, then it must be done
-    scp_type_status = enable_SCP_policy_type()
-
+    # create the organization
+    print("Creating the organization...")
+    org_id, root_id = create_org(feature_set)
+    print("Complete!  Org ID: " + org_id + " Root ID: " + root_id)
 
     # create service control policies
+    print("Creating the SCP...")
     policy_description='Deny All Billing Functions'
     policy_name='DenyAllBilling'
-    POLICY_TYPE='SERVICE_CONTROL_POLICY'
     policy_statement = {
         "Version": "2012-10-17",
         "Statement": [
@@ -420,22 +337,14 @@ def main(arguments):
                         }
                     ]
         }
-    scp_id, scp_arn = create_scp(policy_name,policy_description,POLICY_TYPE,policy_statement)
-    print("SCP policy type status: " + scp_type_status)
-    print("SCP ID:  " + scp_id + "  SCP ARN: " + scp_arn)
-    print("================ COMPLETE ==================")
-    print(".")
+    scp_id, scp_arn = create_scp(policy_name,policy_description,POLICY_TYPE,policy_statement, root_id)
+    print("Complete!   SCP ID:  ",scp_id,"  SCP ARN: ",scp_arn)
 
-
-    print(".")
     # create the IAM groups, policies and admin users
-    print("========== USERS AND IAM POLICIES ==========")
     print("Deploying resources from " + args.template_file + " as " + args.stack_name + " in " + args.stack_region)
     template = get_template(args.template_file)
     stack = deploy_resources(template, args.stack_name, args.stack_region, args.org_admin_password, args.partner_admin_password,scp_arn)
-    #print(stack)
-    print("================ COMPLETE ==================")
-    print(".")
+    print(stack)
 
 
 if __name__ == '__main__':
